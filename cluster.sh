@@ -1,0 +1,51 @@
+#!/bin/bash
+
+# Wait for 10sec to complete the clodformation VPC stack
+sleep 1m
+
+export role=$(aws iam get-role --role-name eks | grep Arn | awk '{print $2}' | sed 's/\"//g')
+export securitygroupId=$(aws cloudformation --region $region  describe-stacks --stack-name  eks-network --query 'Stacks[0].Outputs[0].OutputValue' | sed 's/\"//g')
+export vpcid=$(aws cloudformation --region $region describe-stacks --stack-name  eks-network --query 'Stacks[0].Outputs[1].OutputValue' | sed 's/\"//g')
+export subnetIds=$(aws cloudformation --region $region describe-stacks --stack-name  eks-network --query 'Stacks[0].Outputs[2].OutputValue' | sed 's/\"//g')
+echo $subnetIds > subnets.txt
+export subnet1=$(cat subnets.txt | sed 's/\,/ /g' | awk '{print $1}')
+export subnet2=$(cat subnets.txt | sed 's/\,/ /g' | awk '{print $2}')
+export subnet3=$(cat subnets.txt | sed 's/\,/ /g' | awk '{print $3}')
+export region=us-east-1
+export instance_type=t2.medium
+export keyname=eks
+export ami=ami-dea4d5a1
+export cluster_name=eks-master2
+export node_name=eks-worker
+
+
+echo "The EKS cluster is creating and it will take 10mins, please wait..."
+aws eks create-cluster --region $region --name $cluster_name  --role-arn $role --resources-vpc-config subnetIds=$subnetIds,securityGroupIds=$securitygroupId
+
+sleep 10m
+echo "The EKS master is created."
+
+echo "Creating EKS Worker Nodes, please wait..."
+aws cloudformation --region $region create-stack --stack-name $node_name  --template-body file://vars-eks-nodegroup.yaml   --parameters  ParameterKey=ClusterControlPlaneSecurityGroup,ParameterValue=$securitygroupId ParameterKey=NodeGroupName,ParameterValue=$node_name ParameterKey=NodeAutoScalingGroupMinSize,ParameterValue=1 ParameterKey=NodeAutoScalingGroupMaxSize,ParameterValue=1 ParameterKey=NodeInstanceType,ParameterValue=$instance_type ParameterKey=NodeImageId,ParameterValue=$ami ParameterKey=KeyName,ParameterValue=$keyname ParameterKey=VpcId,ParameterValue=$vpcid ParameterKey=Subnets,ParameterValue=$subnet1 ParameterKey=Subnets,ParameterValue=$subnet2 ParameterKey=Subnets,ParameterValue=$subnet3 ParameterKey=ClusterName,ParameterValue=$cluster_name --capabilities CAPABILITY_IAM
+echo ''
+sleep 5m
+
+echo "Setting up Kubectl"
+
+export url=$(aws eks describe-cluster --name $cluster_name --query cluster.endpoint --region $region | sed 's/\"//g')
+export cert=$(aws eks describe-cluster --name $cluster_name --query cluster.certificateAuthority.data --region $region | sed 's/\"//g')
+
+sed -e "s@cluster_name@$cluster_name@g" -e "s@endpoint_url@$url@g" -e "s@ca_cert@$cert@g" kubeconfig > /src/.kube/config-$cluster_name
+
+export KUBECONFIG=/src/.kube/config-$cluster_name
+
+
+export node_role=$(aws cloudformation --region $region  describe-stacks --stack-name $node_name --query 'Stacks[0].Outputs[0].OutputValue' | sed 's/\"//g')
+
+sed -e "s@node_instance_role@$node_role@g" /src/auth-node.yaml
+
+/bin/kubectl apply -f /src/auth-node.yaml
+
+/bin/kubectl get svc
+
+/bin/kubectl get nodes

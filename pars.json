@@ -1,0 +1,24 @@
+[
+  {
+    "ParameterKey": "ClusterName",
+    "ParameterValue": "eks-node-test",    
+    "ParameterKey": "ClusterControlPlaneSecurityGroup",
+    "ParameterValue": "sg-fabc27b1",
+    "ParameterKey": "NodeGroupName",
+    "ParameterValue": "eks-node",
+    "ParameterKey": "NodeAutoScalingGroupMinSize",
+    "ParameterValue": "1",
+    "ParameterKey": "NodeAutoScalingGroupMaxSize",
+    "ParameterValue": "2",
+    "ParameterKey": "NodeInstanceType",
+    "ParameterValue": "t2.medium",
+    "ParameterKey": "NodeImageId",
+    "ParameterValue": "ami-dea4d5a1",
+    "ParameterKey": "KeyName",
+    "ParameterValue": "eks",
+    "ParameterKey": "VpcId",
+    "ParameterValue": "vpc-6e5ab814",
+    "ParameterKey": "Subnets",
+    "ParameterValue": "[subnet-c2df7aa5,subnet-63ec4b4d,subnet-81a8c1cb]"
+  }
+]
