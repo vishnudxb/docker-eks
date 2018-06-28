@@ -15,7 +15,7 @@ export region=us-east-1
 export instance_type=t2.medium
 export keyname=eks
 export ami=ami-dea4d5a1
-export cluster_name=eks-master2
+export cluster_name=eks-master
 export node_name=eks-worker
 
 
@@ -37,14 +37,14 @@ export cert=$(aws eks describe-cluster --name $cluster_name --query cluster.cert
 
 sed -e "s@cluster_name@$cluster_name@g" -e "s@endpoint_url@$url@g" -e "s@ca_cert@$cert@g" kubeconfig > /src/.kube/config-$cluster_name
 
-export KUBECONFIG=/src/.kube/config-$cluster_name
-
-
 export node_role=$(aws cloudformation --region $region  describe-stacks --stack-name $node_name --query 'Stacks[0].Outputs[0].OutputValue' | sed 's/\"//g')
 
-sed -e "s@node_instance_role@$node_role@g" /src/auth-node.yaml
+sed -e "s@node_instance_role@$node_role@g" auth-node.yaml > /src/node.yaml
 
-/bin/kubectl apply -f /src/auth-node.yaml
+export AWS_CONFIG_FILE=/src/.aws/credentials && aws sts get-caller-identity
+export KUBECONFIG=/src/.kube/config-$cluster_name
+
+/bin/kubectl apply -f /src/node.yaml
 
 /bin/kubectl get svc
 

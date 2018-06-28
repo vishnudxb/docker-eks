@@ -11,11 +11,11 @@ ADD . /src/
 
 RUN mkdir -p /src/.aws
 
-# You can try this way or you can mount your aws credentials folder to the container
+# No need to hardcore the value below:
 
 ARG AWS_ACCESS_KEY=xxx
-ARG AWS_SECRET_KEY=ccc
-ARG REGION=uuu
+ARG AWS_SECRET_KEY=yyy
+ARG REGION=zzz
 
 ENV aws_access_key_id=${AWS_ACCESS_KEY} \
     aws_secret_access_key=${AWS_SECRET_KEY} \
