@@ -26,7 +26,7 @@ sleep 10m
 echo "The EKS master is created."
 
 echo "Creating EKS Worker Nodes, please wait..."
-aws cloudformation --region $region create-stack --stack-name $node_name  --template-body file://vars-eks-nodegroup.yaml   --parameters  ParameterKey=ClusterControlPlaneSecurityGroup,ParameterValue=$securitygroupId ParameterKey=NodeGroupName,ParameterValue=$node_name ParameterKey=NodeAutoScalingGroupMinSize,ParameterValue=1 ParameterKey=NodeAutoScalingGroupMaxSize,ParameterValue=1 ParameterKey=NodeInstanceType,ParameterValue=$instance_type ParameterKey=NodeImageId,ParameterValue=$ami ParameterKey=KeyName,ParameterValue=$keyname ParameterKey=VpcId,ParameterValue=$vpcid ParameterKey=Subnets,ParameterValue=$subnet1 ParameterKey=Subnets,ParameterValue=$subnet2 ParameterKey=Subnets,ParameterValue=$subnet3 ParameterKey=ClusterName,ParameterValue=$cluster_name --capabilities CAPABILITY_IAM
+aws cloudformation --region $region create-stack --stack-name $node_name  --template-body file://vars-eks-nodegroup.yaml   --parameters  ParameterKey=ClusterControlPlaneSecurityGroup,ParameterValue=$securitygroupId ParameterKey=NodeGroupName,ParameterValue=$node_name ParameterKey=NodeAutoScalingGroupMinSize,ParameterValue=3 ParameterKey=NodeAutoScalingGroupMaxSize,ParameterValue=20 ParameterKey=NodeInstanceType,ParameterValue=$instance_type ParameterKey=NodeImageId,ParameterValue=$ami ParameterKey=KeyName,ParameterValue=$keyname ParameterKey=VpcId,ParameterValue=$vpcid ParameterKey=Subnets,ParameterValue=$subnet1 ParameterKey=Subnets,ParameterValue=$subnet2 ParameterKey=Subnets,ParameterValue=$subnet3 ParameterKey=ClusterName,ParameterValue=$cluster_name --capabilities CAPABILITY_IAM
 echo ''
 sleep 5m
 
