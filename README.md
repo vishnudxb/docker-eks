@@ -73,6 +73,8 @@ export node_name=eks-worker
 ```
  git clone https://github.com/vishnudxb/docker-eks.git && cd docker-eks
 
+ Open the vars-eks-vpc.yaml & cluster.sh and update with your Variables. Then build the docker image.
+
  docker build --build-arg AWS_ACCESS_KEY=<Put your access key> --build-arg AWS_SECRET_KEY=<put your secret key> --build-arg REGION=<Your AWS Region> vishnunair/docker-efs
 
 ```
