@@ -71,11 +71,15 @@ export node_name=eks-worker
 ### Run the below command and grab a cup of coffee because it will take some [time](https://docs.aws.amazon.com/eks/latest/userguide/getting-started.html)
 
 ```
- git clone https://github.com/vishnudxb/docker-eks.git && cd docker-eks
+ git clone https://github.com/atrakic/docker-eks.git && cd docker-eks
 
  Open the vars-eks-vpc.yaml & cluster.sh and update with your Variables. Then build the docker image.
 
- docker build --build-arg AWS_ACCESS_KEY=<Put your access key> --build-arg AWS_SECRET_KEY=<put your secret key> --build-arg REGION=<Your AWS Region> vishnunair/docker-efs
+ docker build --build-arg AWS_ACCESS_KEY=<Put your access key> --build-arg AWS_SECRET_KEY=<put your secret key> --build-arg REGION=<Your AWS Region> atrakic/docker-eks
+ 
+ or just type
+ 
+ make
 
 ```
 

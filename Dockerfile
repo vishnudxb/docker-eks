@@ -1,8 +1,10 @@
-FROM alpine:latest
+FROM golang:alpine
 RUN apk -v --update add \
         python \
         py-pip \
+	git \
         curl && \
+    pip install --upgrade pip && \
     pip install --upgrade awscli python-magic && \
     rm /var/cache/apk/*
 
@@ -33,18 +35,17 @@ RUN export AWS_CONFIG_FILE=/src/.aws/credentials && \
 
 RUN mkdir -p /src/.kube
 
-COPY kubectl /bin/kubectl
+RUN cd /bin && curl -sLO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl \
+  && chmod +x /bin/kubectl
 
-RUN chmod +x /bin/kubectl
-
-COPY heptio-authenticator-aws /bin/heptio-authenticator-aws
-
-RUN chmod +x /bin/heptio-authenticator-aws
+RUN cd /go \
+	&& go get -u -v github.com/kubernetes-sigs/aws-iam-authenticator/cmd/aws-iam-authenticator \ 
+	&& cd src/github.com/kubernetes-sigs/aws-iam-authenticator/cmd/aws-iam-authenticator/ \
+	&& go build -o /bin/heptio-authenticator-aws \
+	&& echo "Build heptio-authenticator-aws complete."
 
 COPY cluster.sh  /bin/cluster.sh
-
 RUN chmod +x /bin/cluster.sh
 
 RUN export AWS_CONFIG_FILE=/src/.aws/credentials && . /bin/cluster.sh
-
 CMD [ "tail", "-F", "-n0", "/etc/hosts"  ]
