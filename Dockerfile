@@ -2,6 +2,7 @@ FROM golang:alpine
 RUN apk -v --update add \
         python \
         py-pip \
+	bash \
 	git \
         curl && \
     pip install --upgrade pip && \
@@ -39,7 +40,7 @@ RUN cd /bin && curl -sLO https://storage.googleapis.com/kubernetes-release/relea
   && chmod +x /bin/kubectl
 
 RUN cd /go \
-	&& go get -u -v github.com/kubernetes-sigs/aws-iam-authenticator/cmd/aws-iam-authenticator \ 
+	&& go get -u -v github.com/kubernetes-sigs/aws-iam-authenticator/cmd/aws-iam-authenticator \
 	&& cd src/github.com/kubernetes-sigs/aws-iam-authenticator/cmd/aws-iam-authenticator/ \
 	&& go build -o /bin/heptio-authenticator-aws \
 	&& echo "Build heptio-authenticator-aws complete."
