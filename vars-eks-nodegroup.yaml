@@ -84,6 +84,11 @@ Parameters:
     Description: Maximum size of Node Group ASG.
     Default: 3
 
+  NodeAutoScalingGroupDesiredCapacity:
+    Type: Number
+    Description: Desired size of Node Group ASG.
+    Default: 3
+
   ClusterName:
     Description: The cluster name provided when the cluster was created.  If it is incorrect, nodes will not be able to join the cluster.
     Type: String
@@ -233,6 +238,7 @@ Metadata:
           - NodeGroupName
           - NodeAutoScalingGroupMinSize
           - NodeAutoScalingGroupMaxSize
+          - NodeAutoScalingGroupDesiredCapacity
           - NodeInstanceType
           - NodeImageId
           - KeyName
@@ -327,7 +333,7 @@ Resources:
   NodeGroup:
     Type: AWS::AutoScaling::AutoScalingGroup
     Properties:
-      DesiredCapacity: !Ref NodeAutoScalingGroupMaxSize
+      DesiredCapacity: !Ref NodeAutoScalingGroupDesiredCapacity
       LaunchConfigurationName: !Ref NodeLaunchConfig
       MinSize: !Ref NodeAutoScalingGroupMinSize
       MaxSize: !Ref NodeAutoScalingGroupMaxSize
@@ -397,4 +403,3 @@ Outputs:
   NodeInstanceRole:
     Description: The node instance role
     Value: !GetAtt NodeInstanceRole.Arn
-
