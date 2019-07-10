@@ -90,3 +90,9 @@ echo "Authenticate the nodes with the cluster"
 /bin/kubectl get svc
 
 /bin/kubectl get nodes
+
+aws sns create-topic --name hiver
+
+aws rds create-db-subnet-group --db-subnet-group-name hiver-db-subnet-group --subnet-ids $subnet1
+
+aws rds create-db-instance --db-name hiver-db --db-instance-identifier hiver --allocated-storage 5 --db-instance-class db.t2.medium  --master-username vishnu --master-user-password HiverTest --db-subnet-group-name hiver-db-subnet-group  --vpc-security-group-ids $securitygroupId --engine mysql --no-auto-minor-version-upgrade  --multi-az
